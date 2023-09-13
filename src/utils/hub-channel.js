@@ -299,8 +299,36 @@ export default class HubChannel extends EventTarget {
     );
   };
 
-  closeHub = () => {
+  closeHub = async () => {
     if (!this._permissions.close_hub) return "unauthorized";
+    const topic = this.channel.topic;
+    const parts = topic.split(":");
+
+    if (parts.length === 2 && parts[0] === "hub") {
+      const remainder = parts[1];
+      console.log(remainder);
+      const endpoint = `http://131.170.250.239:3000/room/delete/${remainder}`;
+      const params = {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json"
+        }
+      };
+
+      try {
+        const response = await fetch(endpoint, params);
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        // Handle the response here, if needed
+      } catch (error) {
+        console.error("Fetch error:", error);
+        // Handle the error appropriately
+      }
+    } else {
+      console.log("Invalid topic format");
+    }
+
     this.channel.push("close_hub", {});
   };
 
