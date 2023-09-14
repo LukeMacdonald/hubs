@@ -1,22 +1,16 @@
 import React, { Component } from "react";
 import { createRoot } from "react-dom/client";
-import InfiniteScroll from "react-infinite-scroller";
 import markdownit from "markdown-it";
 import { FormattedMessage } from "react-intl";
 import { WrappedIntlProvider } from "./react-components/wrapped-intl-provider";
 import { AuthContextProvider } from "./react-components/auth/AuthContext";
 import { store } from "./utils/store-instance";
-import { Row } from "./react-components/layout/Row";
-import { Column } from "./react-components/layout/Column";
-import Course from "./react-components/canvas/Course";
-
 window.APP = { store };
 
 import registerTelemetry from "./telemetry";
 import "./react-components/styles/global.scss";
 import "./assets/stylesheets/whats-new.scss";
 import { PageContainer } from "./react-components/layout/PageContainer";
-import { Spinner } from "./react-components/misc/Spinner";
 import { ThemeProvider } from "./react-components/styles/theme";
 
 registerTelemetry("/canvas", "Canvas");
@@ -95,24 +89,15 @@ class Canvas extends Component {
   render() {
     return (
       <PageContainer>
-        <InfiniteScroll
-          hasMore={this.state.hasMore}
-          loader={
-            <div key="loader" className="loader">
-              <Spinner />
-            </div>
-          }
-          useWindow={false}
-          getScrollParent={() => document.body}
-        >
-          <div className="container">
-            <div className="main">
-              <div className="content">
-                <h1>My Courses</h1>
-              </div>
+        <div className="container">
+          <div className="main">
+            <div className="content">
+              <h1>
+                <FormattedMessage id="canvas.title" defaultMessage="My Courses" />
+              </h1>
             </div>
           </div>
-        </InfiniteScroll>
+        </div>
       </PageContainer>
     );
   }
