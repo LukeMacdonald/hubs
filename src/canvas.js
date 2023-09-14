@@ -18,7 +18,7 @@ import { PageContainer } from "./react-components/layout/PageContainer";
 import { Spinner } from "./react-components/misc/Spinner";
 import { ThemeProvider } from "./react-components/styles/theme";
 
-registerTelemetry("/whats-new", "Hubs What's New");
+registerTelemetry("/canvas", "Canvas");
 
 function formatDate(value) {
   return value && new Date(value).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
