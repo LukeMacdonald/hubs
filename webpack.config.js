@@ -365,7 +365,8 @@ module.exports = async (env, argv) => {
           { from: /^\/cloud/, to: "/cloud.html" },
           { from: /^\/verify/, to: "/verify.html" },
           { from: /^\/tokens/, to: "/tokens.html" },
-          { from: /^\/whats-new/, to: "/whats-new.html" }
+          { from: /^\/whats-new/, to: "/whats-new.html" },
+	  { from: /^\/canvas/, to:"canvas.html"}
         ]
       },
       setupMiddlewares: (middlewares, { app }) => {
@@ -690,8 +691,11 @@ module.exports = async (env, argv) => {
       htmlPagePlugin({
         filename: "verify.html"
       }),
-      htmlPagePlugin({
+      htmlPagePlugin({i
         filename: "tokens.html"
+      }),
+      htmlPagePlugin({i
+        filename: "canvas.html"
       }),
       new CopyWebpackPlugin({
         patterns: [
