@@ -366,7 +366,7 @@ module.exports = async (env, argv) => {
           { from: /^\/verify/, to: "/verify.html" },
           { from: /^\/tokens/, to: "/tokens.html" },
           { from: /^\/whats-new/, to: "/whats-new.html" },
-	  { from: /^\/canvas/, to:"canvas.html"}
+	        { from: /^\/canvas/, to:"/canvas.html"}
         ]
       },
       setupMiddlewares: (middlewares, { app }) => {
