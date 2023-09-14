@@ -19,7 +19,7 @@ function formatDate(value) {
 }
 
 const md = markdownit();
-const DOMAIN = "http://131.170.250.239:49152";
+const DOMAIN = "https://131.170.250.239:49152";
 
 async function getCourses() {
   try {
