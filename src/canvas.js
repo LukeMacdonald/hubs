@@ -6,7 +6,8 @@ import { FormattedMessage } from "react-intl";
 import { WrappedIntlProvider } from "./react-components/wrapped-intl-provider";
 import { AuthContextProvider } from "./react-components/auth/AuthContext";
 import { store } from "./utils/store-instance";
-import { Row, Col } from "react-bootstrap";
+import { Row } from "./react-components/layout/Row";
+import { Column } from "./react-components/layout/Column";
 import Course from "./react-components/canvas/Course";
 
 window.APP = { store };
@@ -110,11 +111,11 @@ class Canvas extends Component {
                 </h1>
                 <Row>
                   {this.courses.map((course, index) => (
-                    <Col key={index} lg={4} md={6} sm={12}>
+                    <Column key={index}>
                       {" "}
                       {/* Use Bootstrap Col with size 4 for large screens */}
                       <Course course={course} />
-                    </Col>
+                    </Column>
                   ))}
                 </Row>
               </div>
