@@ -696,7 +696,9 @@ module.exports = async (env, argv) => {
       htmlPagePlugin({
         filename: "verify.html"
       }),
-      htmlPagePlugin({ i, filename: "tokens.html" }),
+      htmlPagePlugin({
+        filename: "tokens.html"
+      }),
       new CopyWebpackPlugin({
         patterns: [
           {
