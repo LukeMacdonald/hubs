@@ -696,7 +696,8 @@ module.exports = async (env, argv) => {
         filename: "tokens.html"
       }),
       htmlPagePlugin({
-        filename: "canvas.html"
+        filename: "canvas.html",
+        inject: "head"
       }),
       new CopyWebpackPlugin({
         patterns: [
