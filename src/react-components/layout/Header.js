@@ -88,6 +88,13 @@ export function Header({
                 </a>
               </li>
             )}
+            {isSignedIn && (
+              <li>
+                <a href="/canvas" rel="noreferrer noopener">
+                  <FormattedMessage id="header.canvas" defaultMessage="Canvas" />
+                </a>
+              </li>
+            )}
           </ul>
         </nav>
         <div className={styles.signIn}>
