@@ -19,6 +19,9 @@ import { Spinner } from "./react-components/misc/Spinner";
 import { ThemeProvider } from "./react-components/styles/theme";
 
 registerTelemetry("/canvas", "Canvas");
+function formatDate(value) {
+  return value && new Date(value).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+}
 
 const md = markdownit();
 const DOMAIN = "http://131.170.250.239:49152";
@@ -40,8 +43,45 @@ async function getCourses() {
 
 class Canvas extends Component {
   state = {
-    courses: []
+    courses: [],
+    pullRequests: [],
+    moreCursor: null,
+    hasMore: true,
+    currentDate: null
   };
+  async getWhatsNew() {
+    const endpoint = "/api/v1/canvas";
+    const params = ["source=hubs", this.state.moreCursor ? `cursor=${this.state.moreCursor}` : ""].join("&");
+
+    let moreCursor = null;
+    let pullRequests = [];
+    try {
+      const respJson = await fetch(`${endpoint}?${params}`).then(r => r.json());
+      moreCursor = respJson.moreCursor;
+      pullRequests = respJson.pullRequests;
+    } catch (e) {
+      console.error("Error fetching whats-new", e);
+    }
+
+    let currentDate = this.state.currentDate;
+
+    for (let i = 0; i < pullRequests.length; i++) {
+      const pullRequest = pullRequests[i];
+      if (formatDate(pullRequest.mergedAt) === currentDate) {
+        pullRequest.mergedAt = null;
+      } else {
+        currentDate = formatDate(pullRequest.mergedAt);
+      }
+      pullRequest.body = md.render(pullRequest.body);
+    }
+
+    this.setState({
+      hasMore: !!moreCursor,
+      moreCursor,
+      currentDate,
+      pullRequests: [...this.state.pullRequests, ...pullRequests]
+    });
+  }
 
   async getCanvas() {
     const courses = await getCourses();
@@ -66,7 +106,7 @@ class Canvas extends Component {
             <div className="main">
               <div className="content">
                 <h1>
-                  <FormattedMessage id="whats-new-page.title" defaultMessage="My Course's" />
+                  <FormattedMessage id="canvas.title" defaultMessage="My Course's" />
                 </h1>
                 <Row>
                   {this.courses.map((course, index) => (
