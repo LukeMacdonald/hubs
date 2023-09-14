@@ -50,7 +50,12 @@ class Canvas extends Component {
     hasMore: true,
     currentDate: null
   };
-  async getWhatsNew() {
+  async componentDidMount() {
+    // Call getCanvas when the component mounts
+    await this.getCanvas();
+  }
+
+  async getCanvas() {
     const endpoint = "/api/v1/canvas";
     const params = ["source=hubs", this.state.moreCursor ? `cursor=${this.state.moreCursor}` : ""].join("&");
 
@@ -75,19 +80,16 @@ class Canvas extends Component {
       }
       pullRequest.body = md.render(pullRequest.body);
     }
+    const courses = await getCourses();
+    console.log(courses);
 
     this.setState({
+      courses: courses,
       hasMore: !!moreCursor,
       moreCursor,
       currentDate,
       pullRequests: [...this.state.pullRequests, ...pullRequests]
     });
-  }
-
-  async getCanvas() {
-    const courses = await getCourses();
-
-    this.setState({ courses: courses });
   }
 
   render() {
@@ -106,18 +108,7 @@ class Canvas extends Component {
           <div className="container">
             <div className="main">
               <div className="content">
-                <h1>
-                  <FormattedMessage id="canvas.title" defaultMessage="My Course's" />
-                </h1>
-                <Row>
-                  {this.courses.map((course, index) => (
-                    <Column key={index}>
-                      {" "}
-                      {/* Use Bootstrap Col with size 4 for large screens */}
-                      <Course course={course} />
-                    </Column>
-                  ))}
-                </Row>
+                <h1>My Courses</h1>
               </div>
             </div>
           </div>
