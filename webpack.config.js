@@ -330,7 +330,7 @@ module.exports = async (env, argv) => {
       verify: path.join(__dirname, "src", "verify.js"),
       tokens: path.join(__dirname, "src", "tokens.js"),
       "whats-new": path.join(__dirname, "src", "whats-new.js"),
-      canvas :path.join(__dirname,"src","canvas.js"),
+      canvas: path.join(__dirname, "src", "canvas.js"),
       "webxr-polyfill": path.join(__dirname, "src", "webxr-polyfill.js")
     },
     output: {
@@ -367,7 +367,7 @@ module.exports = async (env, argv) => {
           { from: /^\/verify/, to: "/verify.html" },
           { from: /^\/tokens/, to: "/tokens.html" },
           { from: /^\/whats-new/, to: "/whats-new.html" },
-	        { from: /^\/canvas/, to:"/canvas.html"}
+          { from: /^\/canvas/, to: "/canvas.html" }
         ]
       },
       setupMiddlewares: (middlewares, { app }) => {
@@ -687,18 +687,16 @@ module.exports = async (env, argv) => {
         inject: "head"
       }),
       htmlPagePlugin({
+        filename: "canvas.html",
+        inject: "head"
+      }),
+      htmlPagePlugin({
         filename: "signin.html"
       }),
       htmlPagePlugin({
         filename: "verify.html"
       }),
-      htmlPagePlugin({i
-        filename: "tokens.html"
-      }),
-      htmlPagePlugin({
-        filename: "canvas.html",
-        inject: "head"
-      }),
+      htmlPagePlugin({ i, filename: "tokens.html" }),
       new CopyWebpackPlugin({
         patterns: [
           {
