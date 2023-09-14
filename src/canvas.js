@@ -20,10 +20,6 @@ import { ThemeProvider } from "./react-components/styles/theme";
 
 registerTelemetry("/canvas", "Canvas");
 
-function formatDate(value) {
-  return value && new Date(value).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
-}
-
 const md = markdownit();
 const DOMAIN = "http://131.170.250.239:49152";
 
@@ -44,51 +40,19 @@ async function getCourses() {
 
 class Canvas extends Component {
   state = {
-    pullRequests: [],
-    moreCursor: null,
-    hasMore: true,
-    currentDate: null
+    courses: []
   };
 
   async getCanvas() {
-    const endpoint = "/api/v1/whats-new";
-    const params = ["source=hubs", this.state.moreCursor ? `cursor=${this.state.moreCursor}` : ""].join("&");
-
-    let moreCursor = null;
-    let pullRequests = [];
-    try {
-      const respJson = await fetch(`${endpoint}?${params}`).then(r => r.json());
-      moreCursor = respJson.moreCursor;
-      pullRequests = respJson.pullRequests;
-    } catch (e) {
-      console.error("Error fetching whats-new", e);
-    }
-
-    let currentDate = this.state.currentDate;
-
-    for (let i = 0; i < pullRequests.length; i++) {
-      const pullRequest = pullRequests[i];
-      if (formatDate(pullRequest.mergedAt) === currentDate) {
-        pullRequest.mergedAt = null;
-      } else {
-        currentDate = formatDate(pullRequest.mergedAt);
-      }
-      pullRequest.body = md.render(pullRequest.body);
-    }
-
-    this.setState({
-      hasMore: !!moreCursor,
-      moreCursor,
-      currentDate,
-      pullRequests: [...this.state.pullRequests, ...pullRequests]
-    });
-  }
-  async render() {
     const courses = await getCourses();
+
+    this.setState({ courses: courses });
+  }
+
+  render() {
     return (
       <PageContainer>
         <InfiniteScroll
-          loadMore={this.getWhatsNew.bind(this)}
           hasMore={this.state.hasMore}
           loader={
             <div key="loader" className="loader">
@@ -105,7 +69,7 @@ class Canvas extends Component {
                   <FormattedMessage id="whats-new-page.title" defaultMessage="My Course's" />
                 </h1>
                 <Row>
-                  {courses.map((course, index) => (
+                  {this.courses.map((course, index) => (
                     <Col key={index} lg={4} md={6} sm={12}>
                       {" "}
                       {/* Use Bootstrap Col with size 4 for large screens */}
