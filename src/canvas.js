@@ -51,7 +51,7 @@ class Canvas extends Component {
   };
 
   async getCanvas() {
-    const endpoint = "/api/v1/canvas";
+    const endpoint = "/api/v1/whats-new";
     const params = ["source=hubs", this.state.moreCursor ? `cursor=${this.state.moreCursor}` : ""].join("&");
 
     let moreCursor = null;
