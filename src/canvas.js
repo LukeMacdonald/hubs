@@ -5,6 +5,9 @@ import { FormattedMessage } from "react-intl";
 import { WrappedIntlProvider } from "./react-components/wrapped-intl-provider";
 import { AuthContextProvider } from "./react-components/auth/AuthContext";
 import { store } from "./utils/store-instance";
+import { Row } from "./react-components/layout/Row";
+import { Column } from "./react-components/layout/Column";
+import Course from "./react-components/canvas/Course";
 window.APP = { store };
 
 import registerTelemetry from "./telemetry";
@@ -95,6 +98,13 @@ class Canvas extends Component {
               <h1>
                 <FormattedMessage id="canvas.title" defaultMessage="My Courses" />
               </h1>
+              <Row>
+                {this.state.courses.map((course, index) => (
+                  <Column key={index}>
+                    <Course course={course} />
+                  </Column>
+                ))}
+              </Row>
             </div>
           </div>
         </div>
