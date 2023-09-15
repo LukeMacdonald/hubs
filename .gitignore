@@ -56,7 +56,7 @@ typings/
 
 # dotenv environment variables file
 .env
-admin/.env
+admin/.env~
 # Ignore dist folder with webpack build output
 dist/
 
