@@ -6,6 +6,8 @@ import {
   LoadedByMediaLoader,
   MediaContentBounds,
   MediaImageLoaderData,
+  MediaInfo,
+  MediaLink,
   MediaLoaded,
   MediaLoader,
   MediaVideoLoaderData,
@@ -30,11 +32,12 @@ import { loadAudio } from "../utils/load-audio";
 import { loadHtml } from "../utils/load-html";
 import { MediaType, mediaTypeName, resolveMediaInfo } from "../utils/media-utils";
 import { EntityID } from "../utils/networking-types";
+import { LinkType, inflateLink } from "../inflators/link";
+import { inflateGrabbable } from "../inflators/grabbable";
 
 const getBox = (() => {
   const rotation = new Euler();
-  return (world: HubsWorld, eid: EntityID, rootEid: EntityID, worldSpace?: boolean) => {
-    const box = new Box3();
+  return (world: HubsWorld, eid: EntityID, rootEid: EntityID, box: Box3, worldSpace?: boolean) => {
     const obj = world.eid2obj.get(eid)!;
     const rootObj = world.eid2obj.get(rootEid)!;
 
@@ -57,8 +60,6 @@ const getBox = (() => {
 
     rootObj.matrixWorldNeedsUpdate = true;
     rootObj.updateMatrices();
-
-    return box;
   };
 })();
 
@@ -178,36 +179,51 @@ function* loadByMediaType(
   //       content then using MediaImage/VideoLoaderData as like
   //       transporting data from the inflators. This may be like
   //       special and a bit less maintainable.
+  let mediaEid;
   switch (mediaType) {
     case MediaType.IMAGE:
-      return yield* loadImage(
+      mediaEid = yield* loadImage(
         world,
+        eid,
         accessibleUrl,
         contentType,
         MediaImageLoaderData.has(eid) ? MediaImageLoaderData.get(eid)! : {}
       );
+      break;
     case MediaType.VIDEO:
-      return yield* loadVideo(
+      mediaEid = yield* loadVideo(
         world,
+        eid,
         accessibleUrl,
         contentType,
         MediaVideoLoaderData.has(eid) ? MediaVideoLoaderData.get(eid)! : {}
       );
+      break;
     case MediaType.MODEL:
-      return yield* loadModel(world, accessibleUrl, contentType, true);
+      mediaEid = yield* loadModel(world, accessibleUrl, contentType, true);
+      break;
     case MediaType.PDF:
-      return yield* loadPDF(world, accessibleUrl);
+      return yield* loadPDF(world, eid, accessibleUrl);
     case MediaType.AUDIO:
-      return yield* loadAudio(
+      mediaEid = yield* loadAudio(
         world,
+        eid,
         accessibleUrl,
         MediaVideoLoaderData.has(eid) ? MediaVideoLoaderData.get(eid)! : {}
       );
+      break;
     case MediaType.HTML:
-      return yield* loadHtml(world, canonicalUrl, thumbnail);
+      return yield* loadHtml(world, eid, canonicalUrl, thumbnail);
     default:
       throw new UnsupportedMediaTypeError(eid, mediaType);
   }
+
+  if (hasComponent(world, MediaLink, eid)) {
+    inflateLink(world, mediaEid, { href: APP.getString(MediaLink.src[eid])!, type: LinkType.LINK });
+    inflateGrabbable(world, mediaEid, { cursor: true, hand: false });
+  }
+
+  return mediaEid;
 }
 
 function* loadMedia(world: HubsWorld, eid: EntityID) {
@@ -223,6 +239,9 @@ function* loadMedia(world: HubsWorld, eid: EntityID) {
     const urlData = (yield resolveMediaInfo(src)) as MediaInfo;
     media = yield* loadByMediaType(world, eid, urlData);
     addComponent(world, MediaLoaded, media);
+    addComponent(world, MediaInfo, media);
+    MediaInfo.accessibleUrl[media] = APP.getSid(urlData.accessibleUrl);
+    MediaInfo.contentType[media] = APP.getSid(urlData.contentType);
   } catch (e) {
     console.error(e);
     media = renderAsEntity(world, ErrorObject());
@@ -234,6 +253,7 @@ function* loadMedia(world: HubsWorld, eid: EntityID) {
 }
 
 const tmpVector = new Vector3();
+const box = new Box3();
 function* loadAndAnimateMedia(world: HubsWorld, eid: EntityID, clearRollbacks: ClearFunction) {
   if (MediaLoader.flags[eid] & MEDIA_LOADER_FLAGS.IS_OBJECT_MENU_TARGET) {
     addComponent(world, ObjectMenuTarget, eid);
@@ -248,10 +268,11 @@ function* loadAndAnimateMedia(world: HubsWorld, eid: EntityID, clearRollbacks: C
     yield* animateScale(world, media);
   }
   removeComponent(world, MediaLoader, eid);
+  removeComponent(world, MediaLink, eid);
 
   if (media) {
     if (hasComponent(world, MediaLoaded, media)) {
-      const box = getBox(world, eid, media);
+      getBox(world, eid, media, box);
       addComponent(world, MediaContentBounds, eid);
       box.getSize(tmpVector);
       MediaContentBounds.bounds[eid].set(tmpVector.toArray());
@@ -268,6 +289,9 @@ const jobs = new JobRunner();
 const mediaLoaderQuery = defineQuery([MediaLoader]);
 const mediaLoaderEnterQuery = enterQuery(mediaLoaderQuery);
 const mediaLoaderExitQuery = exitQuery(mediaLoaderQuery);
+const mediaLoadedQuery = defineQuery([MediaLoaded]);
+const mediaLoadedEnterQuery = enterQuery(mediaLoadedQuery);
+const mediaLoadedExitQuery = exitQuery(mediaLoadedQuery);
 export function mediaLoadingSystem(world: HubsWorld) {
   mediaLoaderEnterQuery(world).forEach(function (eid) {
     jobs.add(eid, clearRollbacks => loadAndAnimateMedia(world, eid, clearRollbacks));
@@ -284,6 +308,9 @@ export function mediaLoadingSystem(world: HubsWorld) {
       MediaVideoLoaderData.delete(eid);
     }
   });
+
+  mediaLoadedEnterQuery(world).forEach(() => APP.scene?.emit("listed_media_changed"));
+  mediaLoadedExitQuery(world).forEach(() => APP.scene?.emit("listed_media_changed"));
 
   jobs.tick();
 }

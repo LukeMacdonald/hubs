@@ -161,6 +161,12 @@ export const LoadedByMediaLoader = defineComponent();
 export const MediaContentBounds = defineComponent({
   bounds: [Types.f32, 3]
 });
+export const MediaInfo = defineComponent({
+  accessibleUrl: Types.ui32,
+  contentType: Types.ui32
+});
+MediaInfo.accessibleUrl[$isStringType] = true;
+MediaInfo.contentType[$isStringType] = true;
 
 // MediaImageLoaderData and MediaVideoLoaderData are
 // for parameters that are set at glTF inflators
@@ -251,7 +257,8 @@ export const VideoMenu = defineComponent({
   trackRef: Types.eid,
   headRef: Types.eid,
   playIndicatorRef: Types.eid,
-  pauseIndicatorRef: Types.eid
+  pauseIndicatorRef: Types.eid,
+  clearTargetTimer: Types.f64
 });
 export const AudioEmitter = defineComponent({
   flags: Types.ui8
@@ -280,7 +287,9 @@ export const ObjectMenu = defineComponent({
   rotateButtonRef: Types.eid,
   mirrorButtonRef: Types.eid,
   scaleButtonRef: Types.eid,
-  targetRef: Types.eid
+  targetRef: Types.eid,
+  handlingTargetRef: Types.eid,
+  flags: Types.ui8
 });
 // TODO: Store this data elsewhere, since only one or two will ever exist.
 export const LinkHoverMenu = defineComponent({
@@ -303,7 +312,9 @@ export const PDFMenu = defineComponent({
   targetRef: Types.eid,
   clearTargetTimer: Types.f64
 });
-export const ObjectMenuTarget = defineComponent();
+export const ObjectMenuTarget = defineComponent({
+  flags: Types.ui8
+});
 export const NetworkDebug = defineComponent();
 export const NetworkDebugRef = defineComponent({
   ref: Types.eid
@@ -381,3 +392,14 @@ export const LinearScale = defineComponent({
 export const Quack = defineComponent();
 export const TrimeshTag = defineComponent();
 export const HeightFieldTag = defineComponent();
+export const LocalAvatar = defineComponent();
+export const RemoteAvatar = defineComponent();
+export const MediaLink = defineComponent({
+  src: Types.ui32
+});
+MediaLink.src[$isStringType] = true;
+export const ObjectMenuTransform = defineComponent({
+  targetObjectRef: Types.eid,
+  prevObjectRef: Types.eid,
+  flags: Types.ui8
+});

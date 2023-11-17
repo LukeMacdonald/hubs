@@ -34,6 +34,16 @@ export function findAncestorWithComponent(world: HubsWorld, component: Component
   return findAncestorEntity(world, eid, otherId => hasComponent(world, component, otherId));
 }
 
+export function findAncestorWithComponents(world: HubsWorld, components: Array<Component>, eid: number) {
+  return findAncestorEntity(world, eid, otherId =>
+    components.every(component => hasComponent(world, component, otherId))
+  );
+}
+
+export function findAncestorWithAnyComponent(world: HubsWorld, components: Array<Component>, eid: number) {
+  return findAncestorEntity(world, eid, otherId => hasAnyComponent(world, components, otherId));
+}
+
 export function findChildWithComponent(world: HubsWorld, component: Component, eid: number) {
   const obj = world.eid2obj.get(eid);
   if (obj) {
@@ -52,5 +62,5 @@ export function findChildWithComponent(world: HubsWorld, component: Component, e
 
 const forceNewLoader = qsTruthy("newLoader");
 export function shouldUseNewLoader() {
-  return forceNewLoader || APP.hub?.user_data?.hubsUseNewLoader;
+  return forceNewLoader || APP.hub?.user_data?.hubs_use_bitecs_based_client;
 }
