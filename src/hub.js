@@ -61,6 +61,11 @@ import { addAnimationComponents } from "./utils/animation";
 import Cookies from "js-cookie";
 import { DIALOG_CONNECTION_ERROR_FATAL, DIALOG_CONNECTION_CONNECTED } from "./naf-dialog-adapter";
 import "./change-hub";
+import "./custom/quiz-question";
+import "./custom/prev-quiz-button";
+import "./custom/next-quiz-button";
+import "./custom/quiz";
+import "./custom/quiz-option";
 
 import "./components/scene-components";
 import "./components/mute-mic";
