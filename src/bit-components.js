@@ -70,6 +70,13 @@ export const HoveredHandRight = defineComponent();
 export const HoveredHandLeft = defineComponent();
 export const HoveredRemoteRight = defineComponent();
 export const HoveredRemoteLeft = defineComponent();
+export const HoverableVisuals = defineComponent({
+  geometryRadius: Types.f32
+});
+/**
+ * @type {Map<EntityId, Uniform[]}>}
+ */
+export const HoverableVisualsUniforms = new Map();
 export const HeldHandRight = defineComponent();
 export const HeldHandLeft = defineComponent();
 export const HeldRemoteRight = defineComponent();
@@ -89,6 +96,8 @@ export const TextButton = defineComponent({ labelRef: Types.eid });
 export const HoldableButton = defineComponent();
 export const SingleActionButton = defineComponent();
 export const Pen = defineComponent();
+export const PenActive = defineComponent();
+export const PenUpdated = defineComponent();
 export const HoverMenuChild = defineComponent();
 export const Static = defineComponent();
 export const Inspectable = defineComponent();
@@ -296,6 +305,7 @@ export const ObjectMenu = defineComponent({
   handlingTargetRef: Types.eid,
   flags: Types.ui8
 });
+export const ObjectDropped = defineComponent();
 // TODO: Store this data elsewhere, since only one or two will ever exist.
 export const LinkHoverMenu = defineComponent({
   targetObjectRef: Types.eid,

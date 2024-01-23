@@ -81,6 +81,10 @@ import { mixerAnimatableSystem } from "../bit-systems/mixer-animatable";
 import { loopAnimationSystem } from "../bit-systems/loop-animation";
 import { linkSystem } from "../bit-systems/link-system";
 import { objectMenuTransformSystem } from "../bit-systems/object-menu-transform-system";
+import { bitPenCompatSystem } from "./bit-pen-system";
+import { sfxButtonSystem } from "../bit-systems/sfx-button-system";
+import { sfxMediaSystem } from "../bit-systems/sfx-media-system";
+import { hoverableVisualsSystem } from "../bit-systems/hoverable-visuals-system";
 
 declare global {
   interface Window {
@@ -190,6 +194,7 @@ export function mainTick(xrFrame: XRFrame, renderer: WebGLRenderer, scene: Scene
   onOwnershipLost(world);
   sceneLoadingSystem(world, hubsSystems.environmentSystem, hubsSystems.characterController);
   mediaLoadingSystem(world);
+  sfxMediaSystem(world, aframeSystems["hubs-systems"].soundEffectsSystem);
 
   networkedTransformSystem(world);
 
@@ -198,11 +203,14 @@ export function mainTick(xrFrame: XRFrame, renderer: WebGLRenderer, scene: Scene
   interactionSystem(world, hubsSystems.cursorTargettingSystem, t, aframeSystems);
 
   buttonSystems(world);
+  sfxButtonSystem(world, aframeSystems["hubs-systems"].soundEffectsSystem);
 
   physicsCompatSystem(world, hubsSystems.physicsSystem);
   hubsSystems.physicsSystem.tick(dt);
   constraintsSystem(world, hubsSystems.physicsSystem);
   floatyObjectSystem(world);
+
+  hoverableVisualsSystem(world);
 
   // We run this earlier in the frame so things have a chance to override properties run by animations
   hubsSystems.animationMixerSystem.tick(dt);
@@ -276,6 +284,8 @@ export function mainTick(xrFrame: XRFrame, renderer: WebGLRenderer, scene: Scene
 
   videoTextureSystem(world);
   audioDebugSystem(world);
+
+  bitPenCompatSystem(world, aframeSystems["pen-tools"]);
 
   deleteEntitySystem(world, aframeSystems.userinput);
   destroyAtExtremeDistanceSystem(world);

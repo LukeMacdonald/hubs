@@ -13,6 +13,7 @@ import { Box3, Group, Matrix4, Quaternion, Vector3 } from "three";
 import { HubsWorld } from "../app";
 import {
   GLTFModel,
+  HoverableVisuals,
   LoadedByMediaLoader,
   MediaContentBounds,
   MediaImageLoaderData,
@@ -47,6 +48,7 @@ import { inflateGrabbable } from "../inflators/grabbable";
 import { findAncestorsWithComponent, findChildWithComponent } from "../utils/bit-utils";
 import { setMatrixWorld } from "../utils/three-utils";
 import { computeObjectAABB, getScaleCoefficient } from "../utils/auto-box-collider";
+import { updateHoverableVisuals } from "./hoverable-visuals-system";
 
 export function* waitForMediaLoaded(world: HubsWorld, eid: EntityID) {
   while (hasComponent(world, MediaLoader, eid)) {
@@ -162,14 +164,17 @@ export function* animateScale(world: HubsWorld, mediaLoaderEid: EntityID) {
 }
 
 function* finish(world: HubsWorld, mediaLoaderEid: EntityID) {
+  if (entityExists(world, mediaLoaderEid) && MediaLoader.flags[mediaLoaderEid] & MEDIA_LOADER_FLAGS.ANIMATE_LOAD) {
+    yield* animateScale(world, mediaLoaderEid);
+  }
   if (entityExists(world, mediaLoaderEid)) {
-    if (MediaLoader.flags[mediaLoaderEid] & MEDIA_LOADER_FLAGS.ANIMATE_LOAD) {
-      yield* animateScale(world, mediaLoaderEid);
-    }
     inflatePhysicsShape(world, mediaLoaderEid, {
       type: Shape.HULL,
       minHalfExtent: 0.04
     });
+    if (hasComponent(world, HoverableVisuals, mediaLoaderEid)) {
+      updateHoverableVisuals(world, mediaLoaderEid);
+    }
   }
 }
 
