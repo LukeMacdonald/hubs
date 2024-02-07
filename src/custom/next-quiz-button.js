@@ -51,15 +51,6 @@ AFRAME.registerComponent("next-quiz-button", {
       this.incrementQuizIndex();
       // this.updateQuestionText();
     };
-    this.onQuestionUpdated = () => {
-      // You might want to update the button state based on the new index here
-      // For example, you can check if the current index is the last one and update accordingly
-      const quizComponent = this.parentEl.components.quiz;
-      if (quizComponent && quizComponent.index === quizComponent.questions.length - 1) {
-        // Handle reaching the last question
-        console.log("Reached the last question!");
-      }
-    };
   },
 
   play() {

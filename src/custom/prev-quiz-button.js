@@ -34,7 +34,6 @@ AFRAME.registerComponent("prev-quiz-button", {
     entity.setAttribute("position", "0 0 0.001");
 
     this.onHover = () => {
-      console.log("Hovered over parent element:", this.parentEl);
       this.hovering = true;
       if (this.data.tooltip) {
         this.data.tooltip.object3D.visible = true;
@@ -49,15 +48,6 @@ AFRAME.registerComponent("prev-quiz-button", {
     this.onClicked = () => {
       this.clicked = !this.clicked;
       this.decrementQuizIndex();
-    };
-    this.onQuestionUpdated = () => {
-      // You might want to update the button state based on the new index here
-      // For example, you can check if the current index is the last one and update accordingly
-      const quizComponent = this.parentEl.components.quiz;
-      if (quizComponent && quizComponent.index === 0) {
-        // Handle reaching the first question
-        console.log("Reached the first question!");
-      }
     };
   },
 
